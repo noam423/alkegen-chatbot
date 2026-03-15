@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alkegen — Assistant IA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Source+Sans+3:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --alkegen-green: #00A86B;
+      --alkegen-green-dark: #007A4E;
+      --alkegen-blue: #0066CC;
+      --alkegen-gradient: linear-gradient(135deg, #00A86B, #0066CC);
+      --alkegen-black: #1A1A1A;
+      --alkegen-gray: #F5F5F5;
+      --alkegen-gray2: #E8E8E8;
+      --alkegen-text: #2C2C2C;
+      --alkegen-muted: #777777;
+      --white: #FFFFFF;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--white); color: var(--alkegen-text); font-family: 'Source Sans 3', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: var(--alkegen-black); padding: 0 48px; height: 68px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-arc { width: 40px; height: 40px; }
+    .logo-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 22px; color: var(--white); letter-spacing: 1px; }
+    .logo-name span { color: var(--alkegen-green); }
+    .header-right { display: flex; align-items: center; gap: 20px; }
+    .nav-link { color: #aaa; font-size: 13px; font-family: 'Montserrat', sans-serif; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+    .nav-link:hover { color: var(--white); }
+    .status-pill { background: rgba(0,168,107,0.15); border: 1px solid rgba(0,168,107,0.4); color: var(--alkegen-green); padding: 5px 12px; border-radius: 20px; font-size: 11px; font-family: 'Montserrat', sans-serif; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 6px; height: 6px; background: var(--alkegen-green); border-radius: 50%; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1;}50%{opacity:0.3;} }
+    .hero { background: linear-gradient(135deg, #1A1A1A 0%, #2a2a2a 50%, #0a1a10 100%); padding: 56px 48px; position: relative; overflow: hidden; }
+    .hero::before { content:''; position:absolute; right:-100px; top:-100px; width:500px; height:500px; background:radial-gradient(circle, rgba(0,168,107,0.12) 0%, transparent 70%); pointer-events:none; }
+    .hero::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #00A86B, #0066CC, transparent); }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-tag { display:inline-flex; align-items:center; background:rgba(0,168,107,0.1); border-left:3px solid var(--alkegen-green); padding:6px 14px; font-size:11px; font-family:'Montserrat',sans-serif; font-weight:600; color:var(--alkegen-green); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:20px; }
+    h1 { font-family:'Montserrat',sans-serif; font-weight:800; font-size:clamp(32px,4vw,52px); color:var(--white); line-height:1.1; margin-bottom:16px; }
+    h1 em { font-style:normal; background:var(--alkegen-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero p { color:#aaa; font-size:15px; line-height:1.7; max-width:520px; }
+    .hero-stats { display:flex; gap:24px; margin-top:32px; flex-wrap:wrap; }
+    .hero-stat { text-align:center; padding:16px 20px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; }
+    .hero-stat-val { font-family:'Montserrat',sans-serif; font-weight:800; font-size:28px; background:var(--alkegen-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero-stat-lbl { font-size:11px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+    .content { flex:1; display:grid; grid-template-columns:1fr 440px; max-width:1300px; margin:0 auto; width:100%; padding:40px 48px; gap:48px; }
+    .left { display:flex; flex-direction:column; gap:28px; }
+    .section-title { font-family:'Montserrat',sans-serif; font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:2px; color:var(--alkegen-green); display:flex; align-items:center; gap:10px; }
+    .section-title::after { content:''; flex:1; height:1px; background:var(--alkegen-gray2); }
+    .capabilities { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .cap-card { background:var(--white); border:1px solid var(--alkegen-gray2); border-radius:12px; padding:20px; transition:all 0.25s; position:relative; overflow:hidden; }
+    .cap-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--alkegen-gradient); transform:scaleY(0); transition:transform 0.25s; transform-origin:bottom; }
+    .cap-card:hover { border-color:var(--alkegen-green); box-shadow:0 4px 20px rgba(0,168,107,0.1); transform:translateY(-2px); }
+    .cap-card:hover::before { transform:scaleY(1); }
+    .cap-icon { width:40px; height:40px; background:var(--alkegen-gray); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:12px; }
+    .cap-title { font-family:'Montserrat',sans-serif; font-weight:600; font-size:13px; color:var(--alkegen-text); margin-bottom:6px; }
+    .cap-desc { font-size:12px; color:var(--alkegen-muted); line-height:1.5; }
+    .quick-questions { display:flex; flex-direction:column; gap:8px; }
+    .qq-btn { background:var(--white); border:1px solid var(--alkegen-gray2); border-radius:10px; padding:13px 16px; text-align:left; cursor:pointer; font-family:'Source Sans 3',sans-serif; font-size:13.5px; color:var(--alkegen-text); display:flex; align-items:center; justify-content:space-between; transition:all 0.2s; }
+    .qq-btn:hover { border-color:var(--alkegen-green); background:rgba(0,168,107,0.03); color:var(--alkegen-green-dark); }
+    .qq-arrow { color:var(--alkegen-muted); font-size:16px; }
+    .chat-panel { background:var(--white); border:1px solid var(--alkegen-gray2); border-radius:16px; display:flex; flex-direction:column; height:580px; box-shadow:0 8px 40px rgba(0,0,0,0.08); overflow:hidden; position:sticky; top:88px; }
+    .chat-head { background:var(--alkegen-black); padding:16px 20px; display:flex; align-items:center; gap:12px; }
+    .chat-avatar { width:38px; height:38px; background:var(--alkegen-gradient); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+    .chat-avatar svg { width:22px; height:22px; }
+    .chat-meta { flex:1; }
+    .chat-meta-name { font-family:'Montserrat',sans-serif; font-weight:600; font-size:14px; color:var(--white); }
+    .chat-meta-status { font-size:11px; color:var(--alkegen-green); display:flex; align-items:center; gap:5px; margin-top:2px; }
+    .messages { flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:14px; background:#FAFAFA; }
+    .messages::-webkit-scrollbar { width:4px; }
+    .messages::-webkit-scrollbar-thumb { background:var(--alkegen-gray2); border-radius:2px; }
+    .msg { display:flex; flex-direction:column; gap:4px; animation:msgIn 0.3s ease; }
+    .msg.user { align-items:flex-end; }
+    .msg.bot { align-items:flex-start; }
+    @keyframes msgIn { from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);} }
+    .bubble { max-width:84%; padding:11px 15px; border-radius:14px; font-size:13.5px; line-height:1.6; }
+    .msg.user .bubble { background:var(--alkegen-gradient); color:var(--white); border-bottom-right-radius:4px; }
+    .msg.bot .bubble { background:var(--white); color:var(--alkegen-text); border:1px solid var(--alkegen-gray2); border-bottom-left-radius:4px; }
+    .msg-time { font-size:10px; color:#bbb; padding:0 4px; }
+    .typing { display:flex; align-items:center; gap:5px; padding:11px 15px; background:var(--white); border:1px solid var(--alkegen-gray2); border-radius:14px; border-bottom-left-radius:4px; width:fit-content; }
+    .typing span { width:6px; height:6px; background:var(--alkegen-green); border-radius:50%; animation:bounce 1.2s infinite; }
+    .typing span:nth-child(2){animation-delay:0.2s;}
+    .typing span:nth-child(3){animation-delay:0.4s;}
+    @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:0.4;}30%{transform:translateY(-6px);opacity:1;}}
+    .chat-input-wrap { padding:14px 16px; border-top:1px solid var(--alkegen-gray2); display:flex; gap:10px; background:var(--white); }
+    .chat-input { flex:1; background:var(--alkegen-gray); border:1px solid var(--alkegen-gray2); border-radius:10px; padding:10px 14px; font-family:'Source Sans 3',sans-serif; font-size:13.5px; color:var(--alkegen-text); outline:none; resize:none; transition:border-color 0.2s; }
+    .chat-input:focus { border-color:var(--alkegen-green); background:var(--white); }
+    .chat-input::placeholder { color:#bbb; }
+    .send-btn { width:42px; height:42px; background:var(--alkegen-gradient); border:none; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:opacity 0.2s,transform 0.15s; flex-shrink:0; }
+    .send-btn:hover { opacity:0.85; }
+    .send-btn:active { transform:scale(0.95); }
+    .send-btn:disabled { opacity:0.4; cursor:not-allowed; }
+    .send-btn svg { width:17px; height:17px; fill:white; }
+    footer { background:var(--alkegen-black); padding:20px 48px; display:flex; align-items:center; justify-content:space-between; }
+    .footer-logo { font-family:'Montserrat',sans-serif; font-weight:700; font-size:16px; color:var(--white); }
+    .footer-logo span { color:var(--alkegen-green); }
+    .footer-text { font-size:12px; color:#666; }
+    @media(max-width:960px){
+      .content{grid-template-columns:1fr;padding:24px;}
+      .chat-panel{position:static;height:500px;}
+      .hero{padding:32px 24px;}
+      .capabilities{grid-template-columns:1fr;}
+      header{padding:0 24px;}
+      footer{padding:16px 24px;}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg class="logo-arc" viewBox="0 0 40 40" fill="none">
+      <defs>
+        <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#00A86B"/>
+          <stop offset="100%" stop-color="#0066CC"/>
+        </linearGradient>
+      </defs>
+      <path d="M4 32 Q20 4 36 32" stroke="url(#arcGrad)" stroke-width="4" stroke-linecap="round" fill="none"/>
+    </svg>
+    <div class="logo-name">ALKE<span>GEN</span></div>
+  </div>
+  <div class="header-right">
+    <a href="#" class="nav-link">À propos</a>
+    <a href="#" class="nav-link">Produits</a>
+    <a href="#" class="nav-link">Carrières</a>
+    <div class="status-pill"><div class="dot"></div>IA Active</div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">✦ Assistant Intelligent Alkegen</div>
+    <h1>Votre guide<br><em>Alkegen</em><br>en temps réel</h1>
+    <p>Accédez instantanément aux informations sur l'entreprise, les produits, les sites de production et les ressources humaines.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-val">9 000+</div><div class="hero-stat-lbl">Employés</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">75</div><div class="hero-stat-lbl">Sites</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">12</div><div class="hero-stat-lbl">Pays</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">2.4B$</div><div class="hero-stat-lbl">CA</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="left">
+    <div class="section-title">Capacités</div>
+    <div class="capabilities">
+      <div class="cap-card"><div class="cap-icon">🏭</div><div class="cap-title">Sites de production</div><div class="cap-desc">France, Europe, Asie, Amériques</div></div>
+      <div class="cap-card"><div class="cap-icon">📦</div><div class="cap-title">Catalogue produits</div><div class="cap-desc">Filtration, isolation, batteries VE</div></div>
+      <div class="cap-card"><div class="cap-icon">👥</div><div class="cap-title">Ressources humaines</div><div class="cap-desc">Recrutement, postes, formation</div></div>
+      <div class="cap-card"><div class="cap-icon">🌱</div><div class="cap-title">RSE & Stratégie</div><div class="cap-desc">Durabilité, ESG, innovations</div></div>
+    </div>
+    <div class="section-title">Questions fréquentes</div>
+    <div class="quick-questions">
+      <button class="qq-btn" onclick="askQuestion(this)">Quels sont les produits Alkegen ?<span class="qq-arrow">→</span></button>
+      <button class="qq-btn" onclick="askQuestion(this)">Où se trouvent les sites en France ?<span class="qq-arrow">→</span></button>
+      <button class="qq-btn" onclick="askQuestion(this)">Comment postuler chez Alkegen ?<span class="qq-arrow">→</span></button>
+      <button class="qq-btn" onclick="askQuestion(this)">Quelle est la mission d'Alkegen ?<span class="qq-arrow">→</span></button>
+      <button class="qq-btn" onclick="askQuestion(this)">Qu'est-ce que la technologie LyPore ?<span class="qq-arrow">→</span></button>
+    </div>
+  </div>
+
+  <div class="chat-panel">
+    <div class="chat-head">
+      <div class="chat-avatar">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M3 19 Q12 3 21 19" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="chat-meta">
+        <div class="chat-meta-name">Assistant Alkegen</div>
+        <div class="chat-meta-status"><div class="dot"></div>En ligne — Prêt à vous aider</div>
+      </div>
+    </div>
+    <div class="messages" id="messages">
+      <div class="msg bot">
+        <div class="bubble">
+          👋 Bonjour ! Je suis l'assistant IA d'Alkegen.<br><br>
+          Je suis là pour répondre à vos questions sur nos <strong>produits</strong>, nos <strong>sites</strong>, nos <strong>équipes</strong> et bien plus.<br><br>
+          Comment puis-je vous aider ?
+        </div>
+        <div class="msg-time">Maintenant</div>
+      </div>
+    </div>
+    <div class="chat-input-wrap">
+      <textarea class="chat-input" id="chatInput" placeholder="Posez votre question..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">ALKE<span>GEN</span></div>
+  <div class="footer-text">© 2026 Alkegen — Usage interne confidentiel</div>
+</footer>
+
+<script>
+  const sessionId = 'sess_' + Math.random().toString(36).substr(2, 10);
+  const msgs = document.getElementById('messages');
+  const input = document.getElementById('chatInput');
+  const btn = document.getElementById('sendBtn');
+  let loading = false;
+
+  function time() { return new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}); }
+
+  function addMsg(text, role) {
+    const d = document.createElement('div');
+    d.className = `msg ${role}`;
+    d.innerHTML = `<div class="bubble">${text.replace(/\n/g,'<br>')}</div><div class="msg-time">${time()}</div>`;
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function showTyping() {
+    const d = document.createElement('div');
+    d.className = 'msg bot'; d.id = 'typing';
+    d.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
+    msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function removeTyping() { const t = document.getElementById('typing'); if(t) t.remove(); }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text || loading) return;
+    addMsg(text, 'user');
+    input.value = ''; input.style.height = 'auto';
+    loading = true; btn.disabled = true;
+    showTyping();
+    try {
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'sendMessage', sessionId, chatInput: text })
+      });
+      const data = await res.json();
+      removeTyping();
+      const out = data?.output || data?.text || data?.message ||
+        data?.data?.output ||
+        (Array.isArray(data) && (data[0]?.output || data[0]?.text)) ||
+        'Je n\'ai pas pu traiter votre demande.';
+      addMsg(out, 'bot');
+    } catch(e) {
+      removeTyping();
+      addMsg('❌ Erreur serveur. Réessayez dans un instant.', 'bot');
+    }
+    loading = false; btn.disabled = false; input.focus();
+  }
+
+  function askQuestion(el) {
+    input.value = el.firstChild.textContent.trim();
+    sendMessage();
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  }
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  }
+</script>
+</body>
+</html>
